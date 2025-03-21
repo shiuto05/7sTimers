@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カウントダウンタイマー (7秒)</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background-color: #b3e5fc; /* 初期背景色: 水色 */
+    }
+    #timer {
+      font-size: 10rem;
+      color: white;
+      transition: font-size 0.3s ease;
+    }
+    #progress-container {
+      width: 80%;
+      height: 20px;
+      background-color: rgba(255,255,255,0.3);
+      border-radius: 10px;
+      margin-top: 30px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      height: 100%;
+      width: 100%;
+      background-color: white;
+      transition: width 1s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="timer">0</div>
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+  <audio id="buzzer" src="Quiz-Wrong_Buzzer01-1.mp3" preload="auto"></audio>
+
+  <script>
+    const timerEl = document.getElementById("timer");
+    const progressBar = document.getElementById("progress-bar");
+    const buzzer = document.getElementById("buzzer");
+    let countdownInterval;
+    let countdownStarted = false;
+
+    const backgroundColors = ["#8fc8e3", "#0288d1", "#388e3c", "#8bc34a", "#f0dd3a", "#ff9800", "#f44336", "#7e57c2"];
+
+    function startCountdown() {
+      if (countdownStarted) return;
+      countdownStarted = true;
+
+      let time = 7;
+      updateTimerDisplay(time);
+      updateBackground(time);
+      updateProgressBar(time);
+
+      countdownInterval = setInterval(() => {
+        time--;
+        updateTimerDisplay(time);
+        updateBackground(time);
+        updateProgressBar(time);
+
+        if (time <= 0) {
+          clearInterval(countdownInterval);
+          document.body.style.backgroundColor = "#7e57c2"; /* 紫色 */
+          timerEl.style.fontSize = "15rem";
+          progressBar.style.width = "0%";
+          buzzer.play();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(time) {
+      timerEl.textContent = time;
+    }
+
+    function updateBackground(time) {
+      const colorIndex = 7 - time;
+      if (colorIndex >= 0 && colorIndex < backgroundColors.length) {
+        document.body.style.transition = "none";
+        document.body.style.backgroundColor = backgroundColors[colorIndex];
+        timerEl.style.fontSize = "10rem";
+      }
+    }
+
+    function updateProgressBar(time) {
+      const widthPercentage = (time / 7) * 100;
+      progressBar.style.width = widthPercentage + "%";
+    }
+
+    window.addEventListener("keydown", () => {
+      clearInterval(countdownInterval);
+      countdownStarted = false;
+      startCountdown();
+    });
+  </script>
+</body>
+</html>
